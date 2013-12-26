@@ -3,17 +3,17 @@
 # *
 # * This program is free software: you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation, either version 3 of the License, or
-# * (at your option) any later version.
-# *
-# * This program is distributed in the hope that it will be useful,
-# * but WITHOUT ANY WARRANTY; without even the implied warranty of
-# * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# * GNU General Public License for more details.
-# *
-# * You should have received a copy of the GNU General Public License
-# * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-# */
+ #* the Free Software Foundation, either version 3 of the License, or
+ #* (at your option) any later version.
+ #*
+ #* This program is distributed in the hope that it will be useful,
+ #* but WITHOUT ANY WARRANTY; without even the implied warranty of
+ #* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ #* GNU General Public License for more details.
+ #*
+ #* You should have received a copy of the GNU General Public License
+ #* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ #*/
 
 __author__ = 'cknorow@gmail.com (Chris knorowski)'
 #motiated by google data sample spreadsheetsample.py 
@@ -33,6 +33,9 @@ import atom
 import getopt
 import sys
 import string
+import time
+import logging
+import getpass
 from grab_cryptsy import currency
 from grab_cryptsy import coinbasebtc
 
@@ -113,48 +116,84 @@ class WorkHorse:
         if entry.title.text == self.sheet_name:
           return '%i'%i
 
-        
-  def _InvalidCommandError(self, input):
-    print 'Invalid input: %s\n' % (input)
-    
-  def Run(self, label, logger):
+  def Run(self, label, logger=False):
     try:
       self._PromptForSpreadsheet()
     except:
+      # tell the program to relogin
       logger.error("Error: Unable to prompt spreadsheet")
-      sys.exit(2)
+      return True
     try:
       self._PromptForWorksheet()
     except:
+      # tell the program to relogin
       logger.error("Error: Unable to prompt worksheet")
-      sys.exit(2)
+      return True
     for i, coin in enumerate(label):
       price = currency(coin)
-      try:
-        self._PromptForCellsAction(['update', '1 %i %s'%(i+1,coin)])
-        self._PromptForCellsAction(['update', '2 %i %.9f'%(i+1,price)])
-      except:
-        logger.error("Error: Unable to Update Cells")
-        sys.exit(2)
+      if price != 'noupdate':
+        try:
+          self._PromptForCellsAction(['update', '1 %i %s'%(i+1,coin)])
+          self._PromptForCellsAction(['update', '2 %i %.9f'%(i+1,price)])
+        except:
+          logger.error("Error: Unable to Update %s Cells"%coin)
+      else:
+          logger.error("Error: Unable to Update Currency Price %s"%coin)
     price = coinbasebtc()  
-    try:
-      self._PromptForCellsAction(['update', '1 %i USDBTC'%(len(label)+1,)])
-      self._PromptForCellsAction(['update', '2 %i %.9f'%(len(label)+1,price)])
-    except:
-      logger.error("Error: Unable to Update BTC Cells")
-      sys.exit(2)
+    if price != 'noupdate':
+      try:
+        self._PromptForCellsAction(['update', '1 %i USDBTC'%(len(label)+1,)])
+        self._PromptForCellsAction(['update', '2 %i %.9f'%(len(label)+1,price)])
+      except:
+        logger.error("Error: Unable to Update BTC Cells")
+    else:
+        logger.error("Error: Unable to Update Currency Price %s"%coin)
+    return False
 
 def main():
-  #this is an example of the iput file
-  user =  ''
-  pw   =  ''
-  key  =  ''
-  sheet_name = 'cryptocoins worksheet'
-  #label can be any of the cryptop coins on 
-  #cryptsy
-  label = ['DGCBTC','DGCLTC','LTCBTC']
-  speedy = WorkHorse(user, pw, sheet_name)
-  speedy.Run(label)
+  #Run this if you don't want to run as a daemon
+  #Instead run the script ina python shell
+    logger = logging.getLogger("DaemonLog")
+    logger.setLevel(logging.INFO)
+    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    handler = logging.FileHandler("/tmp/crypt_python.log")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    logger.info("log Started")
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "", ["user=",
+            "pw=","currency=","s=","c="])
+    except:
+        print '--c [start|stop] --user [username] --pw [password] --s [worksheet name] --currency [DGCLTC,LTCBTC]'
+        sys.exit(2)
+    user = ''
+    pw = ''
+    sheet_name = ''
+    label = ''
+    c = ""
+    # Process options
+    for o, a in opts:
+        if o == "--user":
+            user = a
+        elif o == "--s":
+            sheet_name = a
+        elif o == "--currency":
+            label = a.split(',')
+        elif o == "--c":
+            c = a
+    #label can be any of the cryptop coins on 
+    #cryptsy
+    label = ['DGCBTC','DGCLTC','LTCBTC']
+    pw = getpass.getpass('\nPassword: ')
+    if user == '' or pw == '' or sheet_name == '':
+        print '--user [username] --s [sheet name]'
+        sys.exit(2)
+    speedy = WorkHorse(user, pw, sheet_name)
+    while True:
+        if speedy.Run(label,logger):
+            speedy = WorkHorse(user, pw, sheet_name)
+        print 'updated prices '
+        time.sleep(30)
 
 
 if __name__ == '__main__':

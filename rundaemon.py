@@ -35,7 +35,8 @@ class MyDaemon(Daemon):
         logger.addHandler(handler)
         logger.info("Daemon Started")
         while True:
-            speedy.Run(self.label, logger)
+            if speedy.Run(self.label, logger):
+                speedy = crypto.WorkHorse(self.user, self.pw, self.sheet_name)
             if random.random() <.05:
                 logger.info("Daemon Running Properly")
             time.sleep(30)

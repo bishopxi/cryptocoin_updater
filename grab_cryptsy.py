@@ -19,7 +19,7 @@ __author__ = 'cknorow@gmail.com (Chris knorowski)'
 
 import os
 import sys
-import requests
+import urllib2
 
 marketid = {"LTCBTC":"3",
 "FTCBTC":"5",
@@ -132,19 +132,25 @@ marketid = {"LTCBTC":"3",
 
 def currency(label):
 	#get dgc to btc price
-	r = requests.get('http://pubapi.cryptsy.com/api.php?method=singlemarketdata&marketid=%s'%marketid[label])
-	s = r.text
-	tp = s.rfind('lasttradeprice')
-	coin =  float(s[tp:tp+35].split('"')[2])
-	print label, coin
-	return coin
+    try:
+        r = urllib2.urlopen('http://pubapi.cryptsy.com/api.php?method=singlemarketdata&marketid=%s'%marketid[label])
+        s = r.readlines()[0]
+        tp = s.rfind('lasttradeprice')
+        coin =  float(s[tp:tp+35].split('"')[2])
+        print label, coin
+        return coin
+    except:
+        return "noupdate"
 
 
 def coinbasebtc():
 	#get btc to usd price
-	r = requests.get('https://coinbase.com/api/v1/currencies/exchange_rates')
-	s = r.text
-	tp = s.rfind('btc_to_usd')
-	BtcUsd =  float(s[tp:tp+35].split('"')[2])
-	print "BTCUSD", BtcUsd
-	return BtcUsd
+    try:
+        r = urllib2.urlopen('https://coinbase.com/api/v1/currencies/exchange_rates')
+        s = r.readlines()[0]
+        tp = s.rfind('btc_to_usd')
+        BtcUsd =  float(s[tp:tp+35].split('"')[2])
+        print "BTCUSD", BtcUsd
+        return BtcUsd
+    except:
+        return "noupdate"
