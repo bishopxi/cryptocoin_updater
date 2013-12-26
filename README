@@ -1,3 +1,13 @@
+##
+# 	Written and maintained by Chris Knorowski email:cknorow@gmail.com
+#	if this is useful please show your support by donating
+#	and I will continue to add more features
+#	BTC 17gW42i4eceVHBe3FatwGa6DJXNo9HQ3nw
+#	LTC LMDE7hJJZZXYY2o11nP97JVCjLbBMGq3hh
+#
+##
+
+
 This is a small program which will periodically update the prices of 
 Bitcoin and other altcoins conversion rates in a google spreadsheet.
 At this point the project pulls information from cryptsy and coinbase.
@@ -21,6 +31,8 @@ To Run the Program:
 
 There are a few ways to use this program, but it is designed to be run as a daemon on linux.
 
+cd cryptocoin_updater/
+
 ### Input
 
 --c [start|stop] start or stop the daemon
@@ -33,6 +45,6 @@ python rundaemon.py --c start --user [email address] --s [gdocs spreadsheet name
 
 to stop the daemom:  python rundaemon.py --c stop
 
-by default a log file is generated in /tmp/crypt_daemon.log
+by default the btcusd is added to the end. A log file is generated in /tmp/crypt_daemon.log
 
 
