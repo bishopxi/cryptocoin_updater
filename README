@@ -1,0 +1,38 @@
+This is a small program which will periodically update the prices of 
+Bitcoin and other altcoins conversion rates in a google spreadsheet.
+At this point the project pulls information from cryptsy and coinbase.
+
+
+Installation:
+
+There are two dependencies which need to be installed
+
+1. Request http://docs.python-requests.org/en/latest/user/install/#install
+2. Gdata client library for python https://developers.google.com/gdata/docs/client-libraries
+
+in ubuntu you can install these simply
+
+1. easy_install requests
+2. apt-get install python-gdata
+
+Thats it!
+
+To Run the Program:
+
+There are a few ways to use this program, but it is designed to be run as a daemon on linux.
+
+### Input
+
+--c [start|stop] start or stop the daemon
+--user [email address]
+--s    [gdocs spreadsheet name]  create this file first
+--currency [AltcoinBTC,AltcoinBTC,AltcoinLTC,etc..] Will get any coin exchange that is on cryptsy, no spaces.
+ 
+to start the daemon:
+python rundaemon.py --c start --user [email address] --s [gdocs spreadsheet name] --currency [DGCBTC,DGCLTC,LTCBTC]
+
+to stop the daemom:  python rundaemon.py --c stop
+
+by default a log file is generated in /tmp/crypt_daemon.log
+
+
