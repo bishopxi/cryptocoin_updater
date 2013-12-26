@@ -15,15 +15,14 @@ At this point the project pulls information from cryptsy and coinbase.
 
 Installation:
 
-There are two dependencies which need to be installed
+There is one dependencies which need to be installed to interface with
+google spreadsheets
 
-1. Request http://docs.python-requests.org/en/latest/user/install/#install
-2. Gdata client library for python https://developers.google.com/gdata/docs/client-libraries
+1. Gdata client library for python https://developers.google.com/gdata/docs/client-libraries
 
 in ubuntu you can install these simply
 
-1. easy_install requests
-2. apt-get install python-gdata
+1. apt-get install python-gdata
 
 Thats it!
 
@@ -37,14 +36,19 @@ cd cryptocoin_updater/
 
 --c [start|stop] start or stop the daemon
 --user [email address]
---s    [gdocs spreadsheet name]  create this file first
+--s    [gdocs spreadsheet name]  create this file in google docs first
 --currency [AltcoinBTC,AltcoinBTC,AltcoinLTC,etc..] Will get any coin exchange that is on cryptsy, no spaces.
- 
+
+### Simple: To run in a python shell
+
+python crypto_sheet.py --c start --user [email address] --s [gdocs spreadsheet name] --currency [DGCBTC,DGCLTC,LTCBTC]
+
+
+###ADVANCED  To run as a daemon 
 to start the daemon:
 python rundaemon.py --c start --user [email address] --s [gdocs spreadsheet name] --currency [DGCBTC,DGCLTC,LTCBTC]
 
 to stop the daemom:  python rundaemon.py --c stop
 
 by default the btcusd is added to the end. A log file is generated in /tmp/crypt_daemon.log
-
 
