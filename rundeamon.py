@@ -33,6 +33,7 @@ class MyDaemon(Daemon):
         handler = logging.FileHandler("/tmp/crypt_daemon.log")
         handler.setFormatter(formatter)
         logger.addHandler(handler)
+        logger.info("Daemon Started")
         while True:
             speedy.Run(self.label, logger)
             if random.random() <.05:
