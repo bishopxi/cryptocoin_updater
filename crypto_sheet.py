@@ -191,7 +191,12 @@ def main():
     speedy = WorkHorse(user, pw, sheet_name)
     while True:
         if speedy.Run(label,logger):
-            speedy = WorkHorse(user, pw, sheet_name)
+            try:
+                speedy = WorkHorse(user, pw, sheet_name)
+            except:
+                logger.error("Error: Relogin failed Trying one more time")
+                speedy = WorkHorse(user, pw, sheet_name)
+                logger.info("Relogin Successful on second try")
         print 'updated prices '
         time.sleep(30)
 
