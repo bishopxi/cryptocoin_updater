@@ -37,16 +37,16 @@ cd cryptocoin_updater/
 --c [start|stop] start or stop the daemon
 --user [email address]
 --s    [gdocs spreadsheet name]  create this file in google docs first
---currency [AltcoinBTC,AltcoinBTC,AltcoinLTC,etc..] Will get any coin exchange that is on cryptsy, no spaces.
+--currency [AltcoinBTC,AltcoinBTC,AltcoinLTC,etc..] Will get any coin exchange that is on cryptsy, no spaces. commas seperate each coin
 
 ### Simple: To run in a python shell
 
-python crypto_sheet.py --c start --user [email address] --s [gdocs spreadsheet name] --currency [DGCBTC,DGCLTC,LTCBTC]
+python crypto_sheet.py --c start --user [email address] --s [gdocs spreadsheet name] --currency DGCBTC,DGCLTC,LTCBTC
 
 
 ###ADVANCED  To run as a daemon 
 to start the daemon:
-python rundaemon.py --c start --user [email address] --s [gdocs spreadsheet name] --currency [DGCBTC,DGCLTC,LTCBTC]
+python rundaemon.py --c start --user [email address] --s [gdocs spreadsheet name] --currency DGCBTC,DGCLTC,LTCBTC
 
 to stop the daemom:  python rundaemon.py --c stop
 
