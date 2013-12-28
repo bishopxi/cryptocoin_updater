@@ -36,8 +36,9 @@ import string
 import time
 import logging
 import getpass
-from grab_cryptsy import currency
-from grab_cryptsy import coinbasebtc
+from grab_rate import currency
+from grab_rate import coinbasebtc
+from grab_rate import mtgoxbtc
 
 class WorkHorse:
 
@@ -129,25 +130,36 @@ class WorkHorse:
       # tell the program to relogin
       logger.error("Error: Unable to prompt worksheet")
       return True
+    # Get coinbase btc price
+    price = coinbasebtc()
+    if price != 'noupdate':
+      try:
+        self._PromptForCellsAction(['update', '2 1  Coinbase'])
+        self._PromptForCellsAction(['update', '2 2  %.9f'%(price)])
+      except:
+        logger.error("Error: Unable to Update coinbase BTC Cells")
+    else:
+        logger.error("Error: Unable to Update Currency Price Coinbase")
+    # Get MTgox btc price
+    price = mtgoxbtc()
+    if price != 'noupdate':
+      try:
+        self._PromptForCellsAction(['update', '3 1  MTgox'])
+        self._PromptForCellsAction(['update', '3 2  %.9f'%(price)])
+      except:
+        logger.error("Error: Unable to Update mtgox BTC Cells")
+    else:
+        logger.error("Error: Unable to Update Currency Price MTgox")
     for i, coin in enumerate(label):
       price = currency(coin)
       if price != 'noupdate':
         try:
-          self._PromptForCellsAction(['update', '1 %i %s'%(i+1,coin)])
-          self._PromptForCellsAction(['update', '2 %i %.9f'%(i+1,price)])
+          self._PromptForCellsAction(['update', '1 %i %s'%(i+3,coin)])
+          self._PromptForCellsAction(['update', '2 %i %.9f'%(i+3,price)])
         except:
           logger.error("Error: Unable to Update %s Cells"%coin)
       else:
           logger.error("Error: Unable to Update Currency Price %s"%coin)
-    price = coinbasebtc()  
-    if price != 'noupdate':
-      try:
-        self._PromptForCellsAction(['update', '1 %i USDBTC'%(len(label)+1,)])
-        self._PromptForCellsAction(['update', '2 %i %.9f'%(len(label)+1,price)])
-      except:
-        logger.error("Error: Unable to Update BTC Cells")
-    else:
-        logger.error("Error: Unable to Update Currency Price %s"%coin)
     return False
 
 def main():
@@ -191,7 +203,13 @@ def main():
     speedy = WorkHorse(user, pw, sheet_name)
     while True:
         if speedy.Run(label,logger):
-            speedy = WorkHorse(user, pw, sheet_name)
+            try:
+                speedy = WorkHorse(user, pw, sheet_name)
+            except:
+                logger.error("Error: First relogin attaempt fail trying agin")
+                logger.error("Error: If this fails please report the bug")
+                speedy = WorkHorse(user, pw, sheet_name)
+                logger.info("Second Attempt Succesful")
         print 'updated prices '
         time.sleep(30)
 
